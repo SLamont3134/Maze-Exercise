@@ -1,0 +1,198 @@
+
+#include "Header.h"
+
+
+//build maze
+char maze[10][16] = { "000000000000000", "0 0 0 000 0  00", "0             0",
+"0 0 0000000 0 0", "0 0   0   0   0", "0 000  00  0000", "0    0 0      0",
+"00 0 0 0 000 00","00   0   0    0","000000000000000" };
+
+//stacks used for backtracking
+int xstack[80];
+int ystack[80];
+
+//xaxis location, yaxis location, stack pointer, loop counter
+int x, y,sp, i;
+
+//used for main while loop
+bool loop;
+
+//characters used to identify different peices of maze
+char visited{ 42 }, deadEnd{ 68 }, isWall{ 48 }, current{ 33 }, open{32};
+
+
+int main()
+{
+
+	loop = true;
+	y = 1;
+	x = 1;
+	sp = 0;
+	ystack[sp] = 1;
+	xstack[sp] = 1;
+	
+	//Set player on board
+	maze[y][x] = current;
+
+	//Display maze on start up
+	DisplayBoard(maze);
+
+	//Debugging
+	//printf("xstack = %d \n ystack = %d \n x = %d \n y = %d \n sp=%d \n \n", xstack[sp], ystack[sp], x, y, sp);
+
+	//Wait for user to press enter
+	system("pause");
+
+	//Clears old output to make it seem like peice is moving
+	system("CLS");
+
+	//main loop
+	//while(x!=13  y!=8)
+	while(loop == true)
+	{
+		//called every cycle to determine where to move
+		Move(maze, y, x, loop);
+
+		//redisplays board
+		DisplayBoard(maze);
+
+		//Debugging
+		//printf("xstack = %d \n ystack = %d \n x = %d \n y = %d \n sp=%d \n \n", xstack[sp-1], ystack[sp-1], x, y, sp);
+
+		//should only enter if backtracks all the way back to starting point
+		if (sp == -1)
+		{
+			printf("The maze has no solution");
+			exit;
+		}
+
+		//wait for enter
+		system("pause");
+
+		//clears output
+		system("CLS");
+	}
+	//After solving maze and exitting the while loop
+	printf("\n Congratulations you won!!! \n");
+
+	//printf("%d %d", ystack[y], xstack[x]);
+	return 0;
+}
+
+//USed to display the board when called
+void DisplayBoard(char maze[10][16]) {
+	int y, x;
+	for (x = 0; x < 10; x++) {
+		for (y = 0; y < 15; y++) {
+			printf("%c", maze[x][y]);
+			if (y == 14) {
+				printf("\n");
+			}
+		}
+	}
+	return;
+}
+
+//Decides what action to take
+void Move(char maze[10][16], int &y, int &x, bool &loop) {
+	/*y+1 is down one space, y-1 is up one space
+	x+1 is right one space, x-1 is left one space*/
+	//printf("%c \n", maze[y][x]);
+
+	//If space is open to the right
+	if (maze[y][x+1] != isWall && maze[y][x+1] == open)
+	{
+		//printf("xright \n");
+		maze[y][x] = visited;
+		push(y, x);
+		x = x + 1;
+		maze[y][x] = current;
+		return;
+	}
+
+	//If space is open beneath
+	if (maze[y+1][x] != isWall && maze[y+1][x] == open)
+	{
+		//printf("ydown \n");
+		maze[y][x] = visited;
+		push(y, x);
+		y = y + 1;
+		maze[y][x] = current;
+		return;
+	}
+
+	//if space is open to the left
+	if (maze[y][x-1] != isWall && maze[y][x-1]== open)
+	{
+		//printf("xleft \n");
+		//printf("x=%d \n", x);
+		maze[y][x] = visited;
+		push(y, x);
+		x = x - 1;
+		maze[y][x] = current;
+		return;
+	}
+
+	//if space is open above
+	if (maze[y-1][x] != isWall && maze[y-1][x] == open)
+	{
+		//printf("y up \n");
+		maze[y][x] = visited;
+		push(y, x);
+		y = y - 1;
+		maze[y][x] = current;
+		return;
+	}
+
+	//endpoint/finish
+	if (maze[y][x] == maze[8][13])
+	{
+		loop = false;
+		return;
+	}
+
+	//deadend
+	else
+	{
+		//printf("no criteria met \n");
+		maze[y][x] = deadEnd;
+		x = xpop();
+		y = ypop();
+		maze[y][x] = current;
+		return;
+	}
+
+}
+
+//push to both stacks
+void push(int a, int b)
+{
+	if (sp < 160)
+	{
+		xstack[sp] = b;
+		ystack[sp++] = a;
+	}
+	return;
+
+}
+
+
+//pop from x stack
+int xpop()
+{
+	int a{};
+	a = -1;
+	if (sp > 0)
+		a = xstack[--sp];
+	return a;
+}
+
+
+//pop from y stack
+int ypop()
+{
+	int a = -1;
+	if (sp > 0)
+		a = ystack[sp];
+	return a;
+}
