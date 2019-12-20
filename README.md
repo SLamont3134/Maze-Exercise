@@ -1,6 +1,7 @@
 # Maze-Exercise
 A self-solving maze program written in C++.
 
+# Description
 This program is a maze solving program. It automaticalls solves a maze stored in an array. 
 It has the ability to move forward, as well as backtrack using a stack. 
 This program can also recognize when it the maze has no solution.
@@ -10,7 +11,9 @@ must be pressed between each cylce of solving. This is intentional and can be re
 out one line of code if the user does not want to see each intermediate step.
 
 
-#Author
+# Author
 Sean Lamont 
+
 Spring 2019
+
 Programming Methodology Homework Assignment
